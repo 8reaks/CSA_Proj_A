@@ -1,0 +1,33 @@
+----------------------------------------------------------------------
+State after executing cycle: 0
+IF.nop: False
+IF.PC: 0
+ID.nop: False
+ID.Instr: 0
+EX.nop: False
+EX.Read_data1: 0
+EX.Read_data2: 0
+EX.Imm: 0
+EX.Rs: 0
+EX.Rt: 0
+EX.Wrt_reg_addr: 0
+EX.is_I_type: False
+EX.rd_mem: 0
+EX.wrt_mem: 0
+EX.alu_op: 0
+EX.wrt_enable: 0
+MEM.nop: False
+MEM.ALUresult: 0
+MEM.Store_data: 0
+MEM.Rs: 0
+MEM.Rt: 0
+MEM.Wrt_reg_addr: 0
+MEM.rd_mem: 0
+MEM.wrt_mem: 0
+MEM.wrt_enable: 0
+WB.nop: False
+WB.Wrt_data: 0
+WB.Rs: 0
+WB.Rt: 0
+WB.Wrt_reg_addr: 0
+WB.wrt_enable: 0
