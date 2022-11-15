@@ -17,9 +17,9 @@ class InsMem(object):
         # read instruction memory
         # return 32 bit hex val
         Instruction = 0
-        for i in range(0, 4):
+        for i in range(0, 4):  # 4 lines for an instruction
             Instruction <<= 8  # left shift
-            Instruction = Instruction + int(self.IMem[ReadAddress + i], 2)  # TODO: need to process "ReadAddress"
+            Instruction = Instruction + int(self.IMem[ReadAddress + i], 2)  # TODO: may need to process "ReadAddress"
         return Instruction
 
 
@@ -33,11 +33,16 @@ class DataMem(object):
     def readInstr(self, ReadAddress):
         # read data memory
         # return 32 bit hex val
-        pass
+        Instruction = 0
+        for i in range(0, 4):  # 4 lines for an instruction
+            Instruction <<= 8  # left shift
+            Instruction = Instruction + int(self.DMem[ReadAddress + i], 2)  # TODO: may need to process "ReadAddress"
+        return Instruction
 
     def writeDataMem(self, Address, WriteData):
         # write data into byte addressable memory
-        pass
+        for i in range(0, 4):  # 4 lines for an instruction
+            self.DMem[Address + i] = WriteData[0 + 8 * i: 8 + 8 * i]  # WriteData is Str
 
     def outputDataMem(self):
         resPath = self.ioDir + "\\" + self.id + "_DMEMResult.txt"
@@ -52,11 +57,12 @@ class RegisterFile(object):
 
     def readRF(self, Reg_addr):
         # Fill in
-        pass
+        Reg_data = self.Registers[Reg_addr]
+        return Reg_data
 
     def writeRF(self, Reg_addr, Wrt_reg_data):
         # Fill in
-        pass
+        self.Registers[Reg_addr] = Wrt_reg_data
 
     def outputRF(self, cycle):
         op = ["-"*70+"\n", "State of RF after executing cycle:" + str(cycle) + "\n"]
@@ -126,8 +132,10 @@ class FiveStageCore(Core):
     def step(self):
         # Your implementation
         # --------------------- WB stage ---------------------
-
-
+        if not self.state.WB["nop"]:
+            if self.state.WB["wrt_enable"]:
+                self.myRF.writeRF(self.state.WB["Wrt_reg_addr"], self.state.WB["Wrt_data"])
+        self.state.WB["nop"] = self.state.MEM["nop"]
 
         # --------------------- MEM stage --------------------
 
