@@ -5,6 +5,7 @@ import argparse
 # we keep it as this large number, but the memory is still 32-bit addressable.
 MemSize = 1000
 
+
 class InsMem(object):
     def __init__(self, name, ioDir):
         self.id = name
@@ -135,14 +136,19 @@ class SingleStageCore(Core):
 
     def step(self):
         # Your implementation
+        if self.state.IF["nop"]:
+            self.halted = True
+
         print("PC: " + str(self.state.IF["PC"]))
         Instruction = imem.readInstr(self.state.IF["PC"])
+
         # halted if instruction is 0xffffffff
         if Instruction == 0xffffffff:
             print("meet 0xffffffff")
-            self.halted = True
+            self.nextState.IF["nop"] = True
         else:
-            self.halted = False
+            self.nextState.IF["nop"] = False
+
             self.nextState.IF["PC"] = self.state.IF["PC"] + 4
 
             instr = str(bin(Instruction))[2:]
@@ -156,13 +162,17 @@ class SingleStageCore(Core):
             BType = (opcode == "1100011")
             SType = (opcode == "0100011")
 
-            IsBranch = (opcode == "1100011")
-            IsLoad = (opcode == "0000011")
-            IsStore = (opcode == "0100011")
-            WrtEnable = not (IsStore or IsBranch or JType)
+            isBranch = (opcode == "1100011")
+            isLoad = (opcode == "0000011")
+            isStore = (opcode == "0100011")
+            wrtEnable = not (isStore or isBranch or JType)
 
             funct7 = instr[:7]
             imm = instr[:12]
+            if SType or BType:
+                imm = imm[:7] + instr[20:25]
+            if JType:
+                imm = imm + instr[7:20]
             rs2 = instr[7:12]
             rs1 = instr[12:17]
             funct3 = instr[17:20]
@@ -177,7 +187,7 @@ class SingleStageCore(Core):
 
             # EX
             ALUin1 = str(bin(readData1))[2:]
-            if IType:
+            if IType or SType:
                 ALUin2 = signProcess(imm)
             else:
                 ALUin2 = str(bin(readData2))[2:]
@@ -196,32 +206,35 @@ class SingleStageCore(Core):
                     if funct3 == "110": ALUop = 4
                     if funct3 == "111": ALUop = 5
                 if opcode == "0000011": ALUop = 1
+            if SType:
+                ALUop = 1
 
             ALUout = ALUOperation(ALUop, ALUin1, ALUin2)
             print("ALUout:  " + str(bin(ALUout))[2:].zfill(32))
 
             # MEM
             DMAddr = ALUout
-            WrtData = readData2
-            ReadMem = IsLoad
-            WriteMem = IsStore
+            wrtData = readData2
+            readMem = isLoad
+            writeMem = isStore
 
-            if ReadMem:
+            readData = 0
+
+            print("IsLoad: " + str(isLoad))
+            print("IsStore: " + str(isStore))
+            if readMem:
                 readData = dmem_ss.readInstr(DMAddr)
-                print("IsLoad: " + str(IsLoad))
-
-            elif WriteMem:
-                dmem_ss.writeDataMem(DMAddr, WrtData)
-                print("IsStore: " + str(IsStore))
+            elif writeMem:
+                dmem_ss.writeDataMem(DMAddr, wrtData)
 
             # WB
-            if IsLoad:
-                WData = readData
+            if isLoad:
+                regData = readData
             else:
-                WData = ALUout
+                regData = ALUout
 
-            if WrtEnable:
-                self.myRF.writeRF(rd, WData)
+            if wrtEnable:
+                self.myRF.writeRF(rd, regData)
 
             print("----------------------------------------")
 
@@ -236,7 +249,7 @@ class SingleStageCore(Core):
         printstate.append("IF.PC: " + str(state.IF["PC"]) + "\n")
         printstate.append("IF.nop: " + str(state.IF["nop"]) + "\n")
 
-        if (cycle == 0): perm = "w"
+        if cycle == 0: perm = "w"
         else: perm = "a"
         with open(self.opFilePath, perm) as wf:
             wf.writelines(printstate)
@@ -426,6 +439,10 @@ if __name__ == "__main__":
     imem = InsMem("Imem", ioDir)
     dmem_ss = DataMem("SS", ioDir)
     dmem_fs = DataMem("FS", ioDir)
+
+    # TODO: changed memory size to 1000
+    while len(dmem_ss.DMem) < 1000:
+        dmem_ss.DMem.append("00000000")
 
     ssCore = SingleStageCore(ioDir, imem, dmem_ss)
     fsCore = FiveStageCore(ioDir, imem, dmem_fs)
