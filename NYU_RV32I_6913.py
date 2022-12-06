@@ -101,6 +101,10 @@ class Core(object):
 
 
 def ALUOperation(ALUop, oprand1, oprand2):
+    print("Oprand1: " + oprand1)
+    print("Oprand2: " + oprand2)
+    signOprand1 = oprand1
+    signOprand2 = oprand2
     oprand1 = int(oprand1, 2)
     oprand2 = int(oprand2, 2)
     print("oprand1: " + str(bin(oprand1))[2:].zfill(32))
@@ -111,13 +115,24 @@ def ALUOperation(ALUop, oprand1, oprand2):
     if ALUop == 1:
         result = oprand1 + oprand2
     if ALUop == 2:
+
+        if signOprand1[0] == "1" and len(signOprand1) == 32:
+            oprand1 = -2 ** 31 + int(signOprand1[1:], 2)
+        if signOprand2[0] == "1" and len(signOprand2) == 32:
+            oprand2 = -2 ** 31 + int(signOprand2[1:], 2)
         result = oprand1 - oprand2
+        if result < 0:
+            result = bin(result)[3:].zfill(32)
+            result = ''.join('1' if x == '0' else '0' for x in result)
+            result = int(result, 2)+1
     if ALUop == 3:
         result = oprand1 ^ oprand2
     if ALUop == 4:
-        result = oprand1 or oprand2
+        result = oprand1 | oprand2
     if ALUop == 5:
-        result = oprand1 and oprand2
+        result = oprand1 & oprand2
+    if len(bin(result)) == 35:
+        result = int(bin(result)[3:], 2)
     return result
 
 
@@ -140,7 +155,67 @@ class SingleStageCore(Core):
             self.halted = True
 
         print("PC: " + str(self.state.IF["PC"]))
+
         Instruction = imem.readInstr(self.state.IF["PC"])
+
+        # show instr ###
+        if True:
+            instrtest1 = str(bin(Instruction))[2:].zfill(32)
+            i = "NOT KNOW"
+            if instrtest1[25:] == "0110011":
+                r2 = instrtest1[7:12]
+                r1 = instrtest1[12:17]
+                d = instrtest1[20:25]
+                if instrtest1[:7] == "0100000":
+                    i = "sub"
+                else:
+                    if instrtest1[17:20] == "000":
+                        i = "add"
+                    if instrtest1[17:20] == "100":
+                        i = "xor"
+                    if instrtest1[17:20] == "110":
+                        i = "or"
+                    if instrtest1[17:20] == "111":
+                        i = "and"
+                print(i+" "+"rs"+str(int(d,2))+", "+"rs"+str(int(r1,2))+", "+"rs"+str(int(r2,2)))
+            if instrtest1[25:] == "0010011":
+                r2 = instrtest1[:12]
+                r1 = instrtest1[12:17]
+                d = instrtest1[20:25]
+                if instrtest1[17:20] == "000":
+                    i = "addi"
+                if instrtest1[17:20] == "100":
+                    i = "xori"
+                if instrtest1[17:20] == "110":
+                    i = "ori"
+                if instrtest1[17:20] == "1aa":
+                    i = "andi"
+                print(i + " " + "rs"+str(int(d,2)) + ", " + "rs"+str(int(r1,2)) + ", " +str(int(r2,2)))
+            if instrtest1[25:] == "0000011":
+                r2 = instrtest1[7:12]
+                r1 = instrtest1[12:17]
+                d = instrtest1[20:25]
+                i = "lw"
+                print(i + " " + "rs"+str(int(d,2)) + ", ("+str(int(r2,2))+")" + "rs"+str(int(r1,2)))
+            if instrtest1[25:] == "1101111":
+                i = "JAL"
+                print("JAL")
+            if instrtest1[25:] == "1100011":
+                r2 = instrtest1[7:12]
+                r1 = instrtest1[12:17]
+                d = instrtest1[:7] + instrtest1[20:25]
+                if instrtest1[17:20] == "000":
+                    i = "beq"
+                if instrtest1[17:20] == "001":
+                    i = "bne"
+                print(i + " " + "rs"+str(int(r1,2)) + ", " + "rs"+str(int(r2,2)) + ", " +str(int(d,2)))
+            if instrtest1[25:] == "0100011":
+                r2 = instrtest1[7:12]
+                r1 = instrtest1[12:17]
+                d = instrtest1[:7] + instrtest1[20:25]
+                i = "sw"
+                print(i + " " + "rs"+str(int(r2,2)) + ", ("+str(int(d,2))+")" + "rs"+str(int(r1,2)))
+        # show instr ###
 
         # halted if instruction is 0xffffffff
         if Instruction == 0xffffffff:
@@ -234,7 +309,8 @@ class SingleStageCore(Core):
                 regData = ALUout
 
             if wrtEnable:
-                self.myRF.writeRF(rd, regData)
+                if int(rd, 2) != 0:
+                    self.myRF.writeRF(rd, regData)
 
             print("----------------------------------------")
 
