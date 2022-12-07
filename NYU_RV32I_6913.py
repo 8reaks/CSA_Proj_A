@@ -115,7 +115,6 @@ def ALUOperation(ALUop, oprand1, oprand2):
     if ALUop == 1:
         result = oprand1 + oprand2
     if ALUop == 2:
-
         if signOprand1[0] == "1" and len(signOprand1) == 32:
             oprand1 = -2 ** 31 + int(signOprand1[1:], 2)
         if signOprand2[0] == "1" and len(signOprand2) == 32:
@@ -131,16 +130,32 @@ def ALUOperation(ALUop, oprand1, oprand2):
         result = oprand1 | oprand2
     if ALUop == 5:
         result = oprand1 & oprand2
+    if ALUop == 6:
+        if oprand1 != oprand2:
+            result = 1
+        else:
+            result = 0
+    if ALUop == 7:
+        if oprand1 == oprand2:
+            result = 1
+        else:
+            result = 0
     if len(bin(result)) == 35:
         result = int(bin(result)[3:], 2)
     return result
 
 
 def signProcess(imm):
-    if imm[0] == "0":
-        str = "00000000000000000000" + imm
+    if len(imm) == 12:
+        if imm[0] == "0":
+            str = "00000000000000000000" + imm
+        else:
+            str = "11111111111111111111" + imm
     else:
-        str = "11111111111111111111" + imm
+        if imm[0] == "0":
+            str = "000000000000" + imm
+        else:
+            str = "111111111111" + imm
     return str
 
 
@@ -244,10 +259,12 @@ class SingleStageCore(Core):
 
             funct7 = instr[:7]
             imm = instr[:12]
-            if SType or BType:
+            if SType:
                 imm = imm[:7] + instr[20:25]
+            if BType:
+                imm = instr[0] + instr[24] + instr[1:7] + instr[20:24]
             if JType:
-                imm = imm + instr[7:20]
+                imm = instr[0] + instr[11:19] + instr[11] + instr[1:11]
             rs2 = instr[7:12]
             rs1 = instr[12:17]
             funct3 = instr[17:20]
@@ -267,6 +284,17 @@ class SingleStageCore(Core):
             else:
                 ALUin2 = str(bin(readData2))[2:]
 
+            if BType or JType:
+                imm = signProcess(imm)
+                print("imm:" + str(imm))
+                if imm[0] == "1":
+                    imm = (-2 ** 31 + int(imm[1:], 2))*2
+                    print("imm:" + str(imm))
+                else:
+                    imm = int(imm, 2)*2
+                print("imm:"+str(imm))
+                ALUin2 = str(bin(readData2))[2:]
+
             if RType:
                 if funct7 == "0100000": ALUop = 2
                 else:
@@ -283,6 +311,9 @@ class SingleStageCore(Core):
                 if opcode == "0000011": ALUop = 1
             if SType:
                 ALUop = 1
+            if BType:
+                if funct3 == "001": ALUop = 6
+                if funct3 == "000": ALUop = 7
 
             ALUout = ALUOperation(ALUop, ALUin1, ALUin2)
             print("ALUout:  " + str(bin(ALUout))[2:].zfill(32))
@@ -312,7 +343,19 @@ class SingleStageCore(Core):
                 if int(rd, 2) != 0:
                     self.myRF.writeRF(rd, regData)
 
+            if JType:
+                regData = self.nextState.IF["PC"]
+                if int(rd, 2) != 0:
+                    self.myRF.writeRF(rd, regData)
+
             print("----------------------------------------")
+
+            if BType and funct3 == "001" and ALUout == 1:
+                self.nextState.IF["PC"] = self.state.IF["PC"] + imm - 4
+            if BType and funct3 == "000" and ALUout == 1:
+                self.nextState.IF["PC"] = self.state.IF["PC"] + imm - 4
+            if JType:
+                self.nextState.IF["PC"] = self.state.IF["PC"] + imm - 4
 
         self.myRF.outputRF(self.cycle)  # dump RF
         self.printState(self.nextState, self.cycle)  # print states after executing cycle 0, cycle 1, cycle 2 ...
