@@ -174,62 +174,62 @@ class SingleStageCore(Core):
         Instruction = imem.readInstr(self.state.IF["PC"])
 
         # show instr ###
-        if True:
-            instrtest1 = str(bin(Instruction))[2:].zfill(32)
-            i = "NOT KNOW"
-            if instrtest1[25:] == "0110011":
-                r2 = instrtest1[7:12]
-                r1 = instrtest1[12:17]
-                d = instrtest1[20:25]
-                if instrtest1[:7] == "0100000":
-                    i = "sub"
-                else:
-                    if instrtest1[17:20] == "000":
-                        i = "add"
-                    if instrtest1[17:20] == "100":
-                        i = "xor"
-                    if instrtest1[17:20] == "110":
-                        i = "or"
-                    if instrtest1[17:20] == "111":
-                        i = "and"
-                print(i+" "+"rs"+str(int(d,2))+", "+"rs"+str(int(r1,2))+", "+"rs"+str(int(r2,2)))
-            if instrtest1[25:] == "0010011":
-                r2 = instrtest1[:12]
-                r1 = instrtest1[12:17]
-                d = instrtest1[20:25]
-                if instrtest1[17:20] == "000":
-                    i = "addi"
-                if instrtest1[17:20] == "100":
-                    i = "xori"
-                if instrtest1[17:20] == "110":
-                    i = "ori"
-                if instrtest1[17:20] == "1aa":
-                    i = "andi"
-                print(i + " " + "rs"+str(int(d,2)) + ", " + "rs"+str(int(r1,2)) + ", " +str(int(r2,2)))
-            if instrtest1[25:] == "0000011":
-                r2 = instrtest1[7:12]
-                r1 = instrtest1[12:17]
-                d = instrtest1[20:25]
-                i = "lw"
-                print(i + " " + "rs"+str(int(d,2)) + ", ("+str(int(r2,2))+")" + "rs"+str(int(r1,2)))
-            if instrtest1[25:] == "1101111":
-                i = "JAL"
-                print("JAL")
-            if instrtest1[25:] == "1100011":
-                r2 = instrtest1[7:12]
-                r1 = instrtest1[12:17]
-                d = instrtest1[:7] + instrtest1[20:25]
-                if instrtest1[17:20] == "000":
-                    i = "beq"
-                if instrtest1[17:20] == "001":
-                    i = "bne"
-                print(i + " " + "rs"+str(int(r1,2)) + ", " + "rs"+str(int(r2,2)) + ", " +str(int(d,2)))
-            if instrtest1[25:] == "0100011":
-                r2 = instrtest1[7:12]
-                r1 = instrtest1[12:17]
-                d = instrtest1[:7] + instrtest1[20:25]
-                i = "sw"
-                print(i + " " + "rs"+str(int(r2,2)) + ", ("+str(int(d,2))+")" + "rs"+str(int(r1,2)))
+        # if True:
+        #     instrtest1 = str(bin(Instruction))[2:].zfill(32)
+        #     i = "NOT KNOW"
+        #     if instrtest1[25:] == "0110011":
+        #         r2 = instrtest1[7:12]
+        #         r1 = instrtest1[12:17]
+        #         d = instrtest1[20:25]
+        #         if instrtest1[:7] == "0100000":
+        #             i = "sub"
+        #         else:
+        #             if instrtest1[17:20] == "000":
+        #                 i = "add"
+        #             if instrtest1[17:20] == "100":
+        #                 i = "xor"
+        #             if instrtest1[17:20] == "110":
+        #                 i = "or"
+        #             if instrtest1[17:20] == "111":
+        #                 i = "and"
+        #         print(i+" "+"rs"+str(int(d,2))+", "+"rs"+str(int(r1,2))+", "+"rs"+str(int(r2,2)))
+        #     if instrtest1[25:] == "0010011":
+        #         r2 = instrtest1[:12]
+        #         r1 = instrtest1[12:17]
+        #         d = instrtest1[20:25]
+        #         if instrtest1[17:20] == "000":
+        #             i = "addi"
+        #         if instrtest1[17:20] == "100":
+        #             i = "xori"
+        #         if instrtest1[17:20] == "110":
+        #             i = "ori"
+        #         if instrtest1[17:20] == "1aa":
+        #             i = "andi"
+        #         print(i + " " + "rs"+str(int(d,2)) + ", " + "rs"+str(int(r1,2)) + ", " +str(int(r2,2)))
+        #     if instrtest1[25:] == "0000011":
+        #         r2 = instrtest1[7:12]
+        #         r1 = instrtest1[12:17]
+        #         d = instrtest1[20:25]
+        #         i = "lw"
+        #         print(i + " " + "rs"+str(int(d,2)) + ", ("+str(int(r2,2))+")" + "rs"+str(int(r1,2)))
+        #     if instrtest1[25:] == "1101111":
+        #         i = "JAL"
+        #         print("JAL")
+        #     if instrtest1[25:] == "1100011":
+        #         r2 = instrtest1[7:12]
+        #         r1 = instrtest1[12:17]
+        #         d = instrtest1[:7] + instrtest1[20:25]
+        #         if instrtest1[17:20] == "000":
+        #             i = "beq"
+        #         if instrtest1[17:20] == "001":
+        #             i = "bne"
+        #         print(i + " " + "rs"+str(int(r1,2)) + ", " + "rs"+str(int(r2,2)) + ", " +str(int(d,2)))
+        #     if instrtest1[25:] == "0100011":
+        #         r2 = instrtest1[7:12]
+        #         r1 = instrtest1[12:17]
+        #         d = instrtest1[:7] + instrtest1[20:25]
+        #         i = "sw"
+        #         print(i + " " + "rs"+str(int(r2,2)) + ", ("+str(int(d,2))+")" + "rs"+str(int(r1,2)))
         # show instr ###
 
         # halted if instruction is 0xffffffff
@@ -381,40 +381,88 @@ class FiveStageCore(Core):
 
     def step(self):
         # Your implementation
+
+        # Decide what to do based on state
+
         # --------------------- WB stage ---------------------
+
         if not self.state.WB["nop"]:
             if self.state.WB["wrt_enable"]:
                 self.myRF.writeRF(self.state.WB["Wrt_reg_addr"], self.state.WB["Wrt_data"])
         self.state.WB["nop"] = self.state.MEM["nop"]
 
+
+
+
+
         # --------------------- MEM stage --------------------
 
 
 
+
+
+
+
         # --------------------- EX stage ---------------------
+        # 这里开始ex了，但是这些内容要从ID-stage那里获得
+        if RType:
+            if funct7 == "0100000":
+                ALUop = 0
+                res = ALUOperation(ALUop, rs1, rs2)
+            else:
+                if funct3 == "000":
+                    ALUop = 1
+                    res = ALUOperation(ALUop, rs1, rs2)
+                if funct3 == "100":
+                    ALUop = 2
+                    res = ALUOperation(ALUop, rs1, rs2)
+                if funct3 == "110":
+                    ALUop = 3
+                    res = ALUOperation(ALUop, rs1, rs2)
+                if funct3 == "111":
+                    ALUop = 4
+                    res = ALUOperation(ALUop, rs1, rs2)
+        if IType:
+            if opcode == "0000011":
+                ALUop = 9
+                res = ALUOperation(ALUop, rs1, rs2)
+            else:
+                if funct3 == "000":
+                    ALUop = 5
+                    res = ALUOperation(ALUop, rs1, imm)
+                if funct3 == "100":
+                    ALUop = 6
+                    res = ALUOperation(ALUop, rs1, imm)
+                if funct3 == "110":
+                    ALUop = 7
+                    res = ALUOperation(ALUop, rs1, imm)
+                if funct3 == "111":
+                    ALUop = 8
+                    res = ALUOperation(ALUop, rs1, imm)
+        # under determined
+        # if JType:
+        #     ALUop = 9
+        #     res = ALUOperation(ALUop, rnull, imm)
+        #
+        # if BType or SType:
+        #     if funct3 == "000":
+        #         ALUop = 10
+        #         res = ALUOperation(ALUop, rs1, imm)
+        #     if funct3 == "001":
+        #         ALUop = 11
+        #         res = ALUOperation(ALUop, rs1, imm)
+        #     if funct3 == "010":
+        #         ALUop = 12
+        #         res = ALUOperation(ALUop, rs1, imm)
+
+
+
+
 
 
 
         # --------------------- ID stage ---------------------
 
-
-
-        # --------------------- IF stage ---------------------
-        # IF
-        if not self.state.IF["nop"]:
-            Instruction = imem.readInstr(self.state.IF["PC"])
-            # halted if instruction is 0xffffffff
-            if Instruction == 0xffffffff:
-                self.halted = True
-            else:
-                self.halted = False
-                self.nextState.ID["Instr"] = Instruction
-                self.nextState.IF["PC"] = self.state.IF["PC"] + 4
-
-        # if self.state.IF["nop"]:
-        #     self.halted = True
-
-        # ID
         if not self.state.ID["nop"]:
             instr = str(bin(self.state.ID["Instr"]))[2:]
             opcode = instr[25:]
@@ -455,6 +503,7 @@ class FiveStageCore(Core):
                 rs1 = instr[12:17]
                 funct3 = instr[17:20]
 
+            # TODO: Might need to change them
             self.nextState.EX["Read_data1"] = 0
             self.nextState.EX["Read_data2"] = 0
             self.nextState.EX["Imm"] = int(imm, 2)
@@ -469,60 +518,36 @@ class FiveStageCore(Core):
 
             res = 0
             rnull = 0
-            if RType:
-                if funct7 == "0100000":
-                    ALUop = 0
-                    res = ALUOperation(ALUop, rs1, rs2)
-                else:
-                    if funct3 == "000":
-                        ALUop = 1
-                        res = ALUOperation(ALUop, rs1, rs2)
-                    if funct3 == "100":
-                        ALUop = 2
-                        res = ALUOperation(ALUop, rs1, rs2)
-                    if funct3 == "110":
-                        ALUop = 3
-                        res = ALUOperation(ALUop, rs1, rs2)
-                    if funct3 == "111":
-                        ALUop = 4
-                        res = ALUOperation(ALUop, rs1, rs2)
-            if IType:
-                if opcode == "0000011":
-                    ALUop = 9
-                    res = ALUOperation(ALUop, rs1, rs2)
-                else:
-                    if funct3 == "000":
-                        ALUop = 5
-                        res = ALUOperation(ALUop, rs1, imm)
-                    if funct3 == "100":
-                        ALUop = 6
-                        res = ALUOperation(ALUop, rs1, imm)
-                    if funct3 == "110":
-                        ALUop = 7
-                        res = ALUOperation(ALUop, rs1, imm)
-                    if funct3 == "111":
-                        ALUop = 8
-                        res = ALUOperation(ALUop, rs1, imm)
-            # under determined
-            # if JType:
-            #     ALUop = 9
-            #     res = ALUOperation(ALUop, rnull, imm)
-            #
-            # if BType or SType:
-            #     if funct3 == "000":
-            #         ALUop = 10
-            #         res = ALUOperation(ALUop, rs1, imm)
-            #     if funct3 == "001":
-            #         ALUop = 11
-            #         res = ALUOperation(ALUop, rs1, imm)
-            #     if funct3 == "010":
-            #         ALUop = 12
-            #         res = ALUOperation(ALUop, rs1, imm)
+
+        # --------------------- IF stage ---------------------
+        # IF
+        if not self.state.IF["nop"]:
+            Instruction = imem.readInstr(self.state.IF["PC"])
+            # halted if instruction is 0xffffffff
+            if Instruction == 0xffffffff:
+                self.halted = True
+                # 改
+                self.nextState.IF["nop"] = True
+                self.nextState.IF["PC"] = self.state.IF["PC"]
+
+            else:
+                self.halted = False
+                self.nextState.IF["PC"] = self.state.IF["PC"] + 4
+
+            self.nextState.ID["Instr"] = Instruction
+
+        self.nextState.ID["nop"] =self.state.IF["nop"]
 
 
 
 
-        self.halted = True
+
+
+
+
+
+        # TODO: 这个对吗，这么halt
+        # self.halted = True  # when nope  is finished, so it halted
         if self.state.IF["nop"] and self.state.ID["nop"] and self.state.EX["nop"] and self.state.MEM["nop"] and self.state.WB["nop"]:
             self.halted = True
 
